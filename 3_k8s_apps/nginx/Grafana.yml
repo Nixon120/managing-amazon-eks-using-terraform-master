@@ -1,0 +1,45 @@
+# K8s example - Grafana Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: sonarqube-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:8.2.5  # Use the specific Grafana version you want
+          ports:
+            - name: web
+              containerPort: 3000
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+
+---
+# K8s example - Grafana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: sonarqube-ns
+spec:
+  type: LoadBalancer
+  selector:
+    app: grafana
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: web
